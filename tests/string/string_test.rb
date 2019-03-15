@@ -105,6 +105,20 @@ puts "rbxx_str1=#{rbxx_str1}"
 rb_str1 = 'Hello World!'
 rbxx_str1 = RbxxString.new('Hello World!')
 puts "------------------------------------"
+
+puts "rb_str1.reverse=#{rb_str1.reverse}"
+puts "rbxx_str1.reverse=#{rbxx_str1.reverse}"
+
+puts "------------------------------------"
+
+puts "rb_str1.reverse!=#{rb_str1.reverse!}"
+puts "rbxx_str1.reverse!=#{rbxx_str1.reverse!}"
+puts "rb_str1=#{rb_str1}"
+puts "rbxx_str1=#{rbxx_str1}"
+
+rb_str1 = 'Hello World!'
+rbxx_str1 = RbxxString.new('Hello World!')
+puts "------------------------------------"
 # rb_str1.each_char { |chr|
 #     puts chr
 # }

@@ -252,6 +252,7 @@ VALUE rbxx_string_swapcase(VALUE self)
 	TypedData_Get_Struct(self, rbxx_string_t, &rbxx_string_type, data);
 
     VALUE dup = rb_funcall(cRbxxString, rb_intern("new"), 1, rb_str_new_cstr(""));
+
     rbxx_string_t * dup_data;
 	TypedData_Get_Struct(dup, rbxx_string_t, &rbxx_string_type, dup_data);
     
@@ -294,6 +295,34 @@ VALUE rbxx_string_swapcase_bang(VALUE self)
     return self;
 }
 
+VALUE rbxx_string_reverse(VALUE self)
+{
+    rbxx_string_t * data;
+	TypedData_Get_Struct(self, rbxx_string_t, &rbxx_string_type, data);
+
+    VALUE dup = rb_funcall(cRbxxString, rb_intern("new"), 1, rb_str_new_cstr(""));
+
+    rbxx_string_t * dup_data;
+	TypedData_Get_Struct(dup, rbxx_string_t, &rbxx_string_type, dup_data);
+
+    std::string * ins = data->impl;
+    std::string * dup_ins = dup_data->impl;
+    dup_ins->insert(dup_ins->begin(), ins->begin(), ins->end());
+    std::reverse(dup_ins->begin(), dup_ins->end());
+
+    return dup;
+}
+
+VALUE rbxx_string_reverse_bang(VALUE self)
+{
+    rbxx_string_t * data;
+	TypedData_Get_Struct(self, rbxx_string_t, &rbxx_string_type, data);
+
+    std::reverse(data->impl->begin(), data->impl->end());
+
+    return self;
+}
+
 /*
  * Should probably move these to a
  * rbxx::string namespace
@@ -317,6 +346,7 @@ void define_rbxx_string()
     rb_define_method(cRbxxString, "downcase!", (rb_func) rbxx_string_downcase_bang, 0);
     rb_define_method(cRbxxString, "swapcase", (rb_func) rbxx_string_swapcase, 0);
     rb_define_method(cRbxxString, "swapcase!", (rb_func) rbxx_string_swapcase_bang, 0);
-
+    rb_define_method(cRbxxString, "reverse", (rb_func) rbxx_string_reverse, 0);
+    rb_define_method(cRbxxString, "reverse!", (rb_func) rbxx_string_reverse_bang, 0);
     rb_define_method(cRbxxString, "to_str", (rb_func) rbxx_string_to_str, 0);
 }
