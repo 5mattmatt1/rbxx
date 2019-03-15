@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <locale>         // std::locale, std::toupper
 
 VALUE cRbxxString = Qnil;
 
@@ -120,6 +121,136 @@ VALUE rbxx_str_cmp_m(VALUE self, VALUE cmp)
 	// return rb_invcmp(self, cmp);
 }
 
+VALUE rbxx_string_aref(VALUE self, VALUE rb_idx)
+{
+    rbxx_string_t * data;
+	TypedData_Get_Struct(self, rbxx_string_t, &rbxx_string_type, data);
+
+    int idx = NUM2INT(rb_idx);
+
+    if (idx >= data->impl->size())
+    {
+        return Qnil;
+    }
+    std::string * aref; 
+    aref = new std::string(1, (*data->impl)[idx]);
+
+    return rb_str_new_cstr(aref->c_str());
+}
+
+VALUE rbxx_string_aset(VALUE self, VALUE indx, VALUE val)
+{
+    rbxx_string_t * data;
+	TypedData_Get_Struct(self, rbxx_string_t, &rbxx_string_type, data);
+    long idx;
+
+    const char * to_insert;
+
+    if (!FIXNUM_P(indx))
+    {
+        return Qnil;
+    }
+
+    idx = FIX2LONG(indx);
+
+    if (idx > data->impl->size())
+    {
+        rb_raise(rb_eIndexError, "index %ld out of string", idx);
+        return Qnil;
+    }
+
+    if (rb_type(val) == T_STRING)
+    {
+        to_insert = StringValuePtr(val); 
+    } else if (rb_type(val) == T_DATA)
+    {
+        rbxx_string_t * val_data;
+	    TypedData_Get_Struct(val, rbxx_string_t, &rbxx_string_type, val_data);
+        to_insert = val_data->impl->c_str();    
+    }
+
+    data->impl->erase(idx, 1);
+    data->impl->insert(idx, to_insert);
+    return Qnil;
+}
+
+VALUE rbxx_string_upcase(VALUE self)
+{
+    rbxx_string_t * data;
+	TypedData_Get_Struct(self, rbxx_string_t, &rbxx_string_type, data);
+
+    VALUE dup = rb_funcall(cRbxxString, rb_intern("new"), 1, rb_str_new_cstr(""));
+    rbxx_string_t * dup_data;
+	TypedData_Get_Struct(dup, rbxx_string_t, &rbxx_string_type, dup_data);
+    
+    std::locale loc;
+    char c;
+    for (std::string::size_type i = 0; i < data->impl->length(); ++i)
+    {
+        c = std::toupper((*data->impl)[i], loc);
+        (*dup_data->impl) += c;
+    }
+
+    return dup;
+}
+
+VALUE rbxx_string_upcase_bang(VALUE self)
+{
+    rbxx_string_t * data;
+	TypedData_Get_Struct(self, rbxx_string_t, &rbxx_string_type, data);
+
+    std::locale loc;
+    char c;
+    for (std::string::size_type i = 0; i < data->impl->length(); ++i)
+    {
+        c = std::toupper((*data->impl)[i], loc);
+        (*data->impl)[i] = c;
+    }
+
+    return self;
+}
+
+VALUE rbxx_string_downcase(VALUE self)
+{
+    rbxx_string_t * data;
+	TypedData_Get_Struct(self, rbxx_string_t, &rbxx_string_type, data);
+
+    VALUE dup = rb_funcall(cRbxxString, rb_intern("new"), 1, rb_str_new_cstr(""));
+    rbxx_string_t * dup_data;
+	TypedData_Get_Struct(dup, rbxx_string_t, &rbxx_string_type, dup_data);
+    
+    std::locale loc;
+    char c;
+    for (std::string::size_type i = 0; i < data->impl->length(); ++i)
+    {
+        c = std::tolower((*data->impl)[i], loc);
+        (*dup_data->impl) += c;
+    }
+
+    return dup;
+}
+
+VALUE rbxx_string_downcase_bang(VALUE self)
+{
+    rbxx_string_t * data;
+	TypedData_Get_Struct(self, rbxx_string_t, &rbxx_string_type, data);
+
+    std::locale loc;
+    char c;
+    for (std::string::size_type i = 0; i < data->impl->length(); ++i)
+    {
+        c = std::tolower((*data->impl)[i], loc);
+        (*data->impl)[i] = c;
+    }
+
+    return self;
+}
+
+/*
+ * Should probably move these to a
+ * rbxx::string namespace
+ */
+
 void define_rbxx_string()
 {
     cRbxxString = rb_define_class("RbxxString", rb_cData);
@@ -130,6 +261,12 @@ void define_rbxx_string()
     rb_define_method(cRbxxString, "concat", (rb_func) rbxx_string_concat, 1);
     rb_define_method(cRbxxString, "<<", (rb_func) rbxx_string_concat, 1);
     rb_define_method(cRbxxString, "<=>", (rb_func) rbxx_str_cmp_m, 1);
+    rb_define_method(cRbxxString, "[]", (rb_func) rbxx_string_aref, 1);
+    rb_define_method(cRbxxString, "[]=", (rb_func) rbxx_string_aset, 2);
+    rb_define_method(cRbxxString, "upcase", (rb_func) rbxx_string_upcase, 0);
+    rb_define_method(cRbxxString, "upcase!", (rb_func) rbxx_string_upcase_bang, 0);
+    rb_define_method(cRbxxString, "downcase", (rb_func) rbxx_string_downcase, 0);
+    rb_define_method(cRbxxString, "downcase!", (rb_func) rbxx_string_downcase_bang, 0);
 
     rb_define_method(cRbxxString, "to_str", (rb_func) rbxx_string_to_str, 0);
 }
