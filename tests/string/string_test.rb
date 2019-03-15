@@ -74,6 +74,8 @@ puts "rb_str1.upcase!=#{rbxx_str1.upcase!}"
 puts "rb_str1=#{rb_str1}"
 puts "rbxx_str1=#{rbxx_str1}"
 
+rb_str1 = 'Hello World!'
+rbxx_str1 = RbxxString.new('Hello World!')
 puts "------------------------------------"
 
 puts "rb_str1.downcase=#{rb_str1.downcase}"
@@ -86,6 +88,22 @@ puts "rb_str1.downcase!=#{rbxx_str1.downcase!}"
 puts "rb_str1=#{rb_str1}"
 puts "rbxx_str1=#{rbxx_str1}"
 
+rb_str1 = 'Hello World!'
+rbxx_str1 = RbxxString.new('Hello World!')
+puts "------------------------------------"
+
+puts "rb_str1.swapcase=#{rb_str1.swapcase}"
+puts "rbxx_str1.swapcase=#{rbxx_str1.swapcase}"
+
+puts "------------------------------------"
+
+puts "rb_str1.swapcase!=#{rb_str1.swapcase!}"
+puts "rbxx_str1.swapcase!=#{rbxx_str1.swapcase!}"
+puts "rb_str1=#{rb_str1}"
+puts "rbxx_str1=#{rbxx_str1}"
+
+rb_str1 = 'Hello World!'
+rbxx_str1 = RbxxString.new('Hello World!')
 puts "------------------------------------"
 # rb_str1.each_char { |chr|
 #     puts chr

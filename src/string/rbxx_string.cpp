@@ -246,6 +246,54 @@ VALUE rbxx_string_downcase_bang(VALUE self)
     return self;
 }
 
+VALUE rbxx_string_swapcase(VALUE self)
+{
+    rbxx_string_t * data;
+	TypedData_Get_Struct(self, rbxx_string_t, &rbxx_string_type, data);
+
+    VALUE dup = rb_funcall(cRbxxString, rb_intern("new"), 1, rb_str_new_cstr(""));
+    rbxx_string_t * dup_data;
+	TypedData_Get_Struct(dup, rbxx_string_t, &rbxx_string_type, dup_data);
+    
+    std::locale loc;
+    char c;
+    for (std::string::size_type i = 0; i < data->impl->length(); ++i)
+    {
+        if (std::isupper((*data->impl)[i], loc))
+        {
+            c = std::tolower((*data->impl)[i], loc);
+        } else
+        {
+            c = std::toupper((*data->impl)[i], loc);
+        }
+        (*dup_data->impl) += c;
+    }
+
+    return dup;
+}
+
+VALUE rbxx_string_swapcase_bang(VALUE self)
+{
+    rbxx_string_t * data;
+	TypedData_Get_Struct(self, rbxx_string_t, &rbxx_string_type, data);
+
+    std::locale loc;
+    char c;
+    for (std::string::size_type i = 0; i < data->impl->length(); ++i)
+    {
+        if (std::isupper((*data->impl)[i], loc))
+        {
+            c = std::tolower((*data->impl)[i], loc);
+        } else
+        {
+            c = std::toupper((*data->impl)[i], loc);
+        }
+        (*data->impl)[i] = c;
+    }
+
+    return self;
+}
+
 /*
  * Should probably move these to a
  * rbxx::string namespace
@@ -267,6 +315,8 @@ void define_rbxx_string()
     rb_define_method(cRbxxString, "upcase!", (rb_func) rbxx_string_upcase_bang, 0);
     rb_define_method(cRbxxString, "downcase", (rb_func) rbxx_string_downcase, 0);
     rb_define_method(cRbxxString, "downcase!", (rb_func) rbxx_string_downcase_bang, 0);
+    rb_define_method(cRbxxString, "swapcase", (rb_func) rbxx_string_swapcase, 0);
+    rb_define_method(cRbxxString, "swapcase!", (rb_func) rbxx_string_swapcase_bang, 0);
 
     rb_define_method(cRbxxString, "to_str", (rb_func) rbxx_string_to_str, 0);
 }
