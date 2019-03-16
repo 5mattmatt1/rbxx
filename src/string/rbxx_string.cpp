@@ -8,6 +8,9 @@
 #include <algorithm>
 #include <locale>         // std::locale, std::toupper
 
+#include <vector>
+#include <boost/algorithm/string.hpp>
+
 VALUE cRbxxString = Qnil;
 
 using rb_func = VALUE(*)(ANYARGS);
@@ -323,6 +326,29 @@ VALUE rbxx_string_reverse_bang(VALUE self)
     return self;
 }
 
+VALUE rbxx_string_split(VALUE self, VALUE str)
+{
+    rbxx_string_t * data;
+	TypedData_Get_Struct(self, rbxx_string_t, &rbxx_string_type, data);
+
+    const char * sep;
+
+    rbxx_string_t * str_data;
+	TypedData_Get_Struct(str, rbxx_string_t, &rbxx_string_type, str_data);
+    sep = str_data->impl->c_str();
+
+    std::vector<std::string> split_vec;
+    boost::split(split_vec, (*data->impl), boost::is_any_of(sep));
+    
+    VALUE split_str = rb_ary_new();
+    for (const std::string & elem : split_vec)
+    {
+        rb_ary_push(split_str, rb_str_new_cstr(elem.c_str()));
+    }
+
+    return split_str;
+}
+
 /*
  * Should probably move these to a
  * rbxx::string namespace
@@ -348,5 +374,6 @@ void define_rbxx_string()
     rb_define_method(cRbxxString, "swapcase!", (rb_func) rbxx_string_swapcase_bang, 0);
     rb_define_method(cRbxxString, "reverse", (rb_func) rbxx_string_reverse, 0);
     rb_define_method(cRbxxString, "reverse!", (rb_func) rbxx_string_reverse_bang, 0);
+    rb_define_method(cRbxxString, "split", (rb_func) rbxx_string_split, 1);
     rb_define_method(cRbxxString, "to_str", (rb_func) rbxx_string_to_str, 0);
 }

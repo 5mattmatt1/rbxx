@@ -119,6 +119,13 @@ puts "rbxx_str1=#{rbxx_str1}"
 rb_str1 = 'Hello World!'
 rbxx_str1 = RbxxString.new('Hello World!')
 puts "------------------------------------"
+
+rb_splt_str = "abcbacabcba"
+rbxx_splt_str = RbxxString.new("abcbacabcba")
+
+puts "rb_splt_str.split=#{rb_splt_str.split("c")}"
+puts "rbxx_splt_str.split=#{rbxx_splt_str.split(RbxxString.new("c"))}"
+puts "------------------------------------"
 # rb_str1.each_char { |chr|
 #     puts chr
 # }
