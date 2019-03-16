@@ -333,9 +333,15 @@ VALUE rbxx_string_split(VALUE self, VALUE str)
 
     const char * sep;
 
-    rbxx_string_t * str_data;
-	TypedData_Get_Struct(str, rbxx_string_t, &rbxx_string_type, str_data);
-    sep = str_data->impl->c_str();
+    if (rb_type(str) == T_STRING)
+    {
+        sep = StringValuePtr(str); 
+    } else if (rb_type(str) == T_DATA)
+    {
+        rbxx_string_t * sep_data;
+	    TypedData_Get_Struct(str, rbxx_string_t, &rbxx_string_type, sep_data);
+        sep = sep_data->impl->c_str();    
+    }
 
     std::vector<std::string> split_vec;
     boost::split(split_vec, (*data->impl), boost::is_any_of(sep));
