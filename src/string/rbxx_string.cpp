@@ -344,8 +344,8 @@ VALUE rbxx_string_split(VALUE self, VALUE str)
     }
 
     std::vector<std::string> split_vec;
-    boost::split(split_vec, (*data->impl), boost::is_any_of(sep));
-    
+    boost::iter_split(split_vec, (*data->impl), boost::algorithm::first_finder(sep));
+
     VALUE split_str = rb_ary_new();
     for (const std::string & elem : split_vec)
     {

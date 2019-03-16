@@ -123,8 +123,8 @@ puts "------------------------------------"
 rb_splt_str = "abcbacabcba"
 rbxx_splt_str = RbxxString.new("abcbacabcba")
 
-puts "rb_splt_str.split=#{rb_splt_str.split("c")}"
-puts "rbxx_splt_str.split=#{rbxx_splt_str.split(RbxxString.new("c"))}"
+puts "rb_splt_str.split=#{rb_splt_str.split("cb")}"
+puts "rbxx_splt_str.split=#{rbxx_splt_str.split("cb")}"
 puts "------------------------------------"
 # rb_str1.each_char { |chr|
 #     puts chr
