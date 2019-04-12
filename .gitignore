@@ -1,0 +1,11 @@
+.vscode/*
+CMakeCache.txt
+CMakeFiles/*
+Makefile
+argparse_test
+cmake_install.cmake
+file_test
+map_test
+rect_test
+str_test
+vint_test
