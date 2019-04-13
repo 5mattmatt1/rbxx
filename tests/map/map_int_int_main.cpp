@@ -19,7 +19,7 @@ int main(int argc, char ** argv)
     if (exception != Qnil)
     {
         errMsg = rb_funcall(exception, rb_intern("message"), 0);
-        std::cerr << "Exception!: " << StringValuePtr(errMsg) << std::endl;
+        std::cerr << "Exception!: " << std::endl; // << StringValuePtr(errMsg) << std::endl;
     }
 
 	return ruby_cleanup(0);
